@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:misty_tracer/pages/landing_page/bloc/bloc.dart';
 import 'package:misty_tracer/pages/landing_page/bloc/state.dart';
@@ -16,6 +17,19 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   final ipController = TextEditingController();
   final portController = TextEditingController();
+
+  @override
+  void initState() {
+    ipController.addListener(() {
+      context.read<LandingPageBloc>().onChangedIp(ipController.text);
+    });
+
+    portController.addListener(() {
+      context.read<LandingPageBloc>().onChangedPortNumber(portController.text);
+    });
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -40,7 +54,7 @@ class _LandingPageState extends State<LandingPage> {
     ),
   );
 
-  Step _buildConnectServerStep() {
+  Step _buildConnectServerStep(String ip, String port) {
     return Step(
       title: const Text('Connect to Server'),
       content: Column(
@@ -50,6 +64,19 @@ class _LandingPageState extends State<LandingPage> {
           const SizedBox(height: 12),
           TextField(
             controller: ipController,
+            inputFormatters: [
+              // Allow IP address notation
+              FilteringTextInputFormatter.allow(
+                RegExp(r'^\d{1,3}(\.\d{0,3}){0,3}$'),
+                replacementString: ip,
+              ),
+              // Disallow patterns not captured from the above rule
+              // e.g. multiple dots (192..)
+              FilteringTextInputFormatter.deny(
+                RegExp(r"\d{1,3}(\.){2,}"),
+                replacementString: '',
+              ),
+            ],
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               prefixIcon: Icon(CustomIcon.worldwide),
@@ -62,6 +89,12 @@ class _LandingPageState extends State<LandingPage> {
           const SizedBox(height: 8),
           TextField(
             controller: portController,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(
+                RegExp(r'^\d{0,4}$'),
+                replacementString: port,
+              ),
+            ],
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               prefixIcon: Icon(CustomIcon.ethernet),
@@ -92,7 +125,7 @@ class _LandingPageState extends State<LandingPage> {
                   steps: [
                     startServerStep,
                     onMistyStep,
-                    _buildConnectServerStep(),
+                    _buildConnectServerStep(state.ip, state.port),
                   ],
                   controlsBuilder: _buildStepperControls,
                   onStepContinue: () =>

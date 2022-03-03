@@ -17,4 +17,8 @@ class LandingPageBloc extends Cubit<LandingPageState> {
 
     emit(state.copyWith(stepperIndex: curIndex - 1));
   }
+
+  void onChangedIp(String ip) => emit(state.copyWith(ip: ip));
+
+  void onChangedPortNumber(String port) => emit(state.copyWith(port: port));
 }
