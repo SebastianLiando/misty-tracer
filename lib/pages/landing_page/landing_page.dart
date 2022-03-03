@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:misty_tracer/pages/landing_page/bloc/bloc.dart';
+import 'package:misty_tracer/pages/landing_page/bloc/state.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/header.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/previous_connection.dart';
 import 'package:misty_tracer/theme/icons.dart';
@@ -79,33 +82,27 @@ class _LandingPageState extends State<LandingPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: SafeArea(
-          child: Column(
-            children: [
-              const Center(child: Header()),
-              Stepper(
-                currentStep: 2,
-                physics: const NeverScrollableScrollPhysics(),
-                steps: [
-                  startServerStep,
-                  onMistyStep,
-                  _buildConnectServerStep(),
-                ],
-                controlsBuilder: _buildStepperControls,
-                onStepContinue: () => print('Continue'),
-                onStepCancel: () => print('Cancel'),
-              ),
-              PreviousConnection(
-                ip: '192.168.0.1',
-                port: 400,
-                onTap: () {},
-              ),
-              Row(
-                children: [
-                  Checkbox(value: true, onChanged: (value) {}),
-                  const Text('Skip tutorial for next sessions')
-                ],
-              )
-            ],
+          child: BlocBuilder<LandingPageBloc, LandingPageState>(
+            builder: (context, state) => Column(
+              children: [
+                const Center(child: Header()),
+                Stepper(
+                  currentStep: state.stepperIndex,
+                  physics: const NeverScrollableScrollPhysics(),
+                  steps: [
+                    startServerStep,
+                    onMistyStep,
+                    _buildConnectServerStep(),
+                  ],
+                  controlsBuilder: _buildStepperControls,
+                  onStepContinue: () =>
+                      context.read<LandingPageBloc>().onStepperNext(),
+                  onStepCancel: () =>
+                      context.read<LandingPageBloc>().onStepperPrevious(),
+                ),
+                _buildFooter(state.showFooter),
+              ],
+            ),
           ),
         ),
       ),
@@ -144,7 +141,7 @@ class _LandingPageState extends State<LandingPage> {
         return Row(
           children: [
             ElevatedButton(
-              onPressed: () => details.onStepContinue?.call(),
+              onPressed: () => print('Connect to server'),
               child: const Text('CONNECT'),
             ),
             TextButton(
@@ -156,5 +153,27 @@ class _LandingPageState extends State<LandingPage> {
       default:
         return const SizedBox();
     }
+  }
+
+  Widget _buildFooter(bool show) {
+    return AnimatedOpacity(
+      opacity: show ? 1 : 0,
+      duration: const Duration(milliseconds: 200),
+      child: Column(
+        children: [
+          PreviousConnection(
+            ip: '192.168.0.1',
+            port: 400,
+            onTap: () {},
+          ),
+          Row(
+            children: [
+              Checkbox(value: true, onChanged: (value) {}),
+              const Text('Skip tutorial for next sessions')
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

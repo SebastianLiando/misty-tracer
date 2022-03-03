@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:misty_tracer/pages/landing_page/bloc/bloc.dart';
 import 'package:misty_tracer/pages/landing_page/landing_page.dart';
 import 'package:misty_tracer/theme/theme.dart';
 
@@ -15,7 +17,10 @@ class MistyTracer extends StatelessWidget {
       title: 'Misty Tracer',
       theme: buildTheme(false),
       darkTheme: buildTheme(true),
-      home: const LandingPage(),
+      home: BlocProvider(
+        create: (ctx) => LandingPageBloc(),
+        child: const LandingPage(),
+      ),
     );
   }
 }
