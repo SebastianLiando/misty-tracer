@@ -7,6 +7,9 @@ class LandingPageState with _$LandingPageState {
   const factory LandingPageState({
     @Default("") String ip,
     @Default("") String port,
+    @Default(null) String? previousIp,
+    @Default(null) int? previousPort,
+    @Default(false) bool skipTutorial,
     @Default(0) int stepperIndex,
   }) = _LandingPageState;
 }
@@ -26,9 +29,9 @@ extension LandingPageStateExt on LandingPageState {
     return null;
   }
 
-  bool get hasPreviousSession {
-    return false;
-  }
+  bool get hasPreviousSession => previousIp != null && previousPort != null;
+
+  bool get canConnectToServer => ip.isIpV4 && port.isPortNumber;
 }
 
 extension StringExt on String {

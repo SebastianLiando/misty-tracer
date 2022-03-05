@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:misty_tracer/pages/landing_page/bloc/bloc.dart';
-import 'package:misty_tracer/pages/landing_page/bloc/state.dart';
+import 'package:misty_tracer/pages/landing_page/cubit/cubit.dart';
+import 'package:misty_tracer/pages/landing_page/cubit/state.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/header.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/previous_connection.dart';
+import 'package:misty_tracer/pages/main_page/main_page.dart';
 import 'package:misty_tracer/theme/icons.dart';
 
 class LandingPage extends StatefulWidget {
@@ -18,14 +19,16 @@ class _LandingPageState extends State<LandingPage> {
   final ipController = TextEditingController();
   final portController = TextEditingController();
 
+  LandingPageCubit get pageCubit => context.read();
+
   @override
   void initState() {
     ipController.addListener(() {
-      context.read<LandingPageBloc>().onChangedIp(ipController.text);
+      pageCubit.onChangedIp(ipController.text);
     });
 
     portController.addListener(() {
-      context.read<LandingPageBloc>().onChangedPortNumber(portController.text);
+      pageCubit.onChangedPortNumber(portController.text);
     });
 
     super.initState();
@@ -104,7 +107,7 @@ class _LandingPageState extends State<LandingPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: SafeArea(
-          child: BlocBuilder<LandingPageBloc, LandingPageState>(
+          child: BlocBuilder<LandingPageCubit, LandingPageState>(
             builder: (context, state) => Column(
               children: [
                 const Center(child: Header()),
@@ -116,13 +119,12 @@ class _LandingPageState extends State<LandingPage> {
                     onMistyStep,
                     _buildConnectServerStep(state),
                   ],
-                  controlsBuilder: _buildStepperControls,
-                  onStepContinue: () =>
-                      context.read<LandingPageBloc>().onStepperNext(),
-                  onStepCancel: () =>
-                      context.read<LandingPageBloc>().onStepperPrevious(),
+                  controlsBuilder: (_, details) =>
+                      _buildStepperControls(state, details),
+                  onStepContinue: () => pageCubit.onStepperNext(),
+                  onStepCancel: () => pageCubit.onStepperPrevious(),
                 ),
-                _buildFooter(state.showFooter),
+                _buildFooter(state),
               ],
             ),
           ),
@@ -131,7 +133,10 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  Widget _buildStepperControls(BuildContext context, ControlsDetails details) {
+  Widget _buildStepperControls(
+    LandingPageState state,
+    ControlsDetails details,
+  ) {
     final currentStep = details.currentStep;
 
     switch (currentStep) {
@@ -163,7 +168,9 @@ class _LandingPageState extends State<LandingPage> {
         return Row(
           children: [
             ElevatedButton(
-              onPressed: () => print('Connect to server'),
+              onPressed: state.canConnectToServer
+                  ? () => connectToServer(state.ip, state.portNumber)
+                  : null,
               child: const Text('CONNECT'),
             ),
             TextButton(
@@ -177,24 +184,49 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  Widget _buildFooter(bool show) {
+  Widget _buildFooter(LandingPageState state) {
     return AnimatedOpacity(
-      opacity: show ? 1 : 0,
+      // Display footer only on the last step
+      opacity: state.showFooter ? 1 : 0,
       duration: const Duration(milliseconds: 200),
       child: Column(
         children: [
-          PreviousConnection(
-            ip: '192.168.0.1',
-            port: 400,
-            onTap: () {},
-          ),
+          // Show previous connection card only if there is a previous connection
+          if (state.hasPreviousSession)
+            PreviousConnection(
+              ip: state.previousIp ?? '',
+              port: state.previousPort ?? -1,
+              onTap: () =>
+                  connectToServer(state.previousIp!, state.previousPort!),
+            ),
           Row(
             children: [
-              Checkbox(value: true, onChanged: (value) {}),
-              const Text('Skip tutorial for next sessions')
+              Checkbox(
+                value: state.skipTutorial,
+                onChanged: (skip) =>
+                    pageCubit.onCheckedChangeSkipTutorial(skip ?? false),
+              ),
+              const Text('Skip tutorial for next sessions'),
             ],
           )
         ],
+      ),
+    );
+  }
+
+  void connectToServer(String ip, int port) {
+    // Connect
+
+    // Save to previous session
+    pageCubit.onSaveServerAddress(ip, port);
+
+    // Navigate
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return const MainPage();
+        },
       ),
     );
   }
