@@ -54,7 +54,7 @@ class _LandingPageState extends State<LandingPage> {
     ),
   );
 
-  Step _buildConnectServerStep(String ip, String port) {
+  Step _buildConnectServerStep(LandingPageState state) {
     return Step(
       title: const Text('Connect to Server'),
       content: Column(
@@ -64,25 +64,13 @@ class _LandingPageState extends State<LandingPage> {
           const SizedBox(height: 12),
           TextField(
             controller: ipController,
-            inputFormatters: [
-              // Allow IP address notation
-              FilteringTextInputFormatter.allow(
-                RegExp(r'^\d{1,3}(\.\d{0,3}){0,3}$'),
-                replacementString: ip,
-              ),
-              // Disallow patterns not captured from the above rule
-              // e.g. multiple dots (192..)
-              FilteringTextInputFormatter.deny(
-                RegExp(r"\d{1,3}(\.){2,}"),
-                replacementString: '',
-              ),
-            ],
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(CustomIcon.worldwide),
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(CustomIcon.worldwide),
+              border: const OutlineInputBorder(),
               hintText: "e.g. 192.168.0.1",
               labelText: "IP Address",
+              errorText: state.ipError,
             ),
             textInputAction: TextInputAction.next,
           ),
@@ -91,16 +79,17 @@ class _LandingPageState extends State<LandingPage> {
             controller: portController,
             inputFormatters: [
               FilteringTextInputFormatter.allow(
-                RegExp(r'^\d{0,4}$'),
-                replacementString: port,
+                RegExp(r'^\d{0,5}$'),
+                replacementString: state.port,
               ),
             ],
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(CustomIcon.ethernet),
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(CustomIcon.ethernet),
+              border: const OutlineInputBorder(),
               hintText: "e.g. 8000",
               labelText: "Port Number",
+              errorText: state.portError,
             ),
           ),
           const SizedBox(height: 12),
@@ -125,7 +114,7 @@ class _LandingPageState extends State<LandingPage> {
                   steps: [
                     startServerStep,
                     onMistyStep,
-                    _buildConnectServerStep(state.ip, state.port),
+                    _buildConnectServerStep(state),
                   ],
                   controlsBuilder: _buildStepperControls,
                   onStepContinue: () =>

@@ -16,7 +16,29 @@ extension LandingPageStateExt on LandingPageState {
 
   bool get showFooter => stepperIndex == 2;
 
+  String? get ipError {
+    if (ip.isNotEmpty && !ip.isIpV4) return "Invalid IPv4 address!";
+    return null;
+  }
+
+  String? get portError {
+    if (port.isNotEmpty && !port.isPortNumber) return "Invalid port number!";
+    return null;
+  }
+
   bool get hasPreviousSession {
     return false;
+  }
+}
+
+extension StringExt on String {
+  bool get isIpV4 => RegExp(
+          r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
+      .hasMatch(this);
+
+  bool get isPortNumber {
+    final parsed = int.tryParse(this);
+
+    return parsed != null && parsed <= 65535;
   }
 }
