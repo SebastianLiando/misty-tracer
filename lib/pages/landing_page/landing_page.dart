@@ -8,6 +8,7 @@ import 'package:misty_tracer/pages/landing_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/landing_page/cubit/state.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/header.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/previous_connection.dart';
+import 'package:misty_tracer/pages/main_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/main_page/main_page.dart';
 import 'package:misty_tracer/theme/icons.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -235,7 +236,10 @@ class _LandingPageState extends State<LandingPage> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return const MainPage();
+            return BlocProvider(
+              create: (context) => MainPageCubit(),
+              child: const MainPage(),
+            );
           },
         ),
       );
