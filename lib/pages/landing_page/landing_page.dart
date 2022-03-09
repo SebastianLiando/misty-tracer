@@ -1,12 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:misty_tracer/network/websocket.dart';
 import 'package:misty_tracer/pages/landing_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/landing_page/cubit/state.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/header.dart';
 import 'package:misty_tracer/pages/landing_page/widgets/previous_connection.dart';
 import 'package:misty_tracer/pages/main_page/main_page.dart';
 import 'package:misty_tracer/theme/icons.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({Key? key}) : super(key: key);
@@ -214,20 +218,36 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  void connectToServer(String ip, int port) {
+  void connectToServer(String ip, int port) async {
+    final wsRepo = WebsocketRepository();
+
     // Connect
+    wsRepo.connect(ip, port);
 
-    // Save to previous session
-    pageCubit.onSaveServerAddress(ip, port);
+    try {
+      await wsRepo.connected;
 
-    // Navigate
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return const MainPage();
-        },
-      ),
-    );
+      // Save to previous session
+      pageCubit.onSaveServerAddress(ip, port);
+
+      // Navigate
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return const MainPage();
+          },
+        ),
+      );
+
+      log('Disconnecting from server');
+      wsRepo.disconnect();
+    } on WebSocketChannelException catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to connect to server: ${err.message}'),
+        ),
+      );
+    }
   }
 }
