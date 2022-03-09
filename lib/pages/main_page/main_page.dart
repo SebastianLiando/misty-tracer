@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:misty_tracer/network/websocket.dart';
 import 'package:misty_tracer/pages/main_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/main_page/cubit/state.dart';
 import 'package:misty_tracer/pages/main_page/widgets/disconnect_dialog.dart';
@@ -8,7 +9,9 @@ import 'package:misty_tracer/pages/robots_page/robots_page.dart';
 import 'package:misty_tracer/theme/icons.dart';
 
 class MainPage extends StatelessWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final WebsocketRepository wsRepo;
+
+  const MainPage({Key? key, required this.wsRepo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +54,13 @@ class MainPage extends StatelessWidget {
             selectedIndex: data.tabIndex,
             destinations: const [
               NavigationDestination(
-                  icon: Icon(CustomIcon.robot), label: 'Robots'),
-              NavigationDestination(icon: Icon(Icons.photo), label: 'Photos'),
+                icon: Icon(CustomIcon.robot),
+                label: 'Robots',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.photo),
+                label: 'Photos',
+              ),
             ],
             onDestinationSelected: context.read<MainPageCubit>().onTabChange,
           ),

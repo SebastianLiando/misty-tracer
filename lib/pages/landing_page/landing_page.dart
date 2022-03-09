@@ -238,7 +238,7 @@ class _LandingPageState extends State<LandingPage> {
           builder: (context) {
             return BlocProvider(
               create: (context) => MainPageCubit(),
-              child: const MainPage(),
+              child: MainPage(wsRepo: wsRepo),
             );
           },
         ),
