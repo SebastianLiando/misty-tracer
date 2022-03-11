@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -243,9 +241,6 @@ class _LandingPageState extends State<LandingPage> {
           },
         ),
       );
-
-      log('Disconnecting from server');
-      wsRepo.disconnect();
     } on WebSocketChannelException catch (err) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

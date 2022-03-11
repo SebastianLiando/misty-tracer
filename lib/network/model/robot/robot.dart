@@ -25,7 +25,9 @@ enum RobotState {
 }
 
 @freezed
-class Robot with _$Robot {
+class Robot with _$Robot implements Comparable<Robot> {
+  const Robot._();
+
   const factory Robot({
     @JsonKey(name: "_id") required String id,
     required String serial,
@@ -37,6 +39,20 @@ class Robot with _$Robot {
   }) = _Robot;
 
   factory Robot.fromJson(Map<String, dynamic> json) => _$RobotFromJson(json);
+
+  @override
+  int compareTo(Robot other) {
+    if (!isConfigured && !other.isConfigured ||
+        isConfigured && other.isConfigured) {
+      // Sort by serial number if both are configured/not configured
+      return serial.compareTo(other.serial);
+    } else if (!isConfigured) {
+      // Non-configured robot should be at the front of the list
+      return -1;
+    } else {
+      return 1;
+    }
+  }
 }
 
 extension RobotExt on Robot {

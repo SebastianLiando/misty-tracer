@@ -11,6 +11,7 @@ class RobotListTile extends StatefulWidget {
   final String location;
   final String state;
   final DateTime updatedAt;
+  final void Function()? onTap;
 
   const RobotListTile({
     Key? key,
@@ -19,6 +20,7 @@ class RobotListTile extends StatefulWidget {
     required this.location,
     required this.state,
     required this.updatedAt,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -88,6 +90,7 @@ class _RobotListTileState extends State<RobotListTile> {
       trailing: stateChip,
       title: Text(widget.serial),
       subtitle: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextIcon(
@@ -95,12 +98,15 @@ class _RobotListTileState extends State<RobotListTile> {
               Icons.location_pin,
               color: Theme.of(context).colorScheme.primary,
             ),
-            text: Text(widget.location),
+            text: Expanded(
+              child: Text(widget.location.isEmpty ? '-' : widget.location),
+            ),
           ),
           Text('State updated ${getTimePast(elapsedTime)} ago'),
         ],
       ),
       isThreeLine: true,
+      onTap: widget.onTap,
     );
   }
 }
