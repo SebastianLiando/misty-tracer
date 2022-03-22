@@ -16,10 +16,12 @@ String _getTimePast(Duration duration) {
 
 class StateUpdatedText extends StatefulWidget {
   final DateTime updatedAt;
+  final TextStyle? style;
 
   const StateUpdatedText({
     Key? key,
     required this.updatedAt,
+    this.style,
   }) : super(key: key);
 
   @override
@@ -51,6 +53,9 @@ class _StateUpdatedTextState extends State<StateUpdatedText> {
   Widget build(BuildContext context) {
     final elapsedTime = DateTime.now().difference(widget.updatedAt);
 
-    return Text('State updated ${_getTimePast(elapsedTime)} ago');
+    return Text(
+      'State updated ${_getTimePast(elapsedTime)} ago',
+      style: widget.style,
+    );
   }
 }
