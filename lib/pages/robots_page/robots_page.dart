@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:misty_tracer/common/widgets/divider_with_item.dart';
 import 'package:misty_tracer/network/model/robot/robot.dart';
+import 'package:misty_tracer/pages/robot_dialog/robot_dialog.dart';
 import 'package:misty_tracer/pages/robots_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/robots_page/cubit/state.dart';
 import 'package:misty_tracer/pages/robots_page/widgets/robot_list_tile.dart';
@@ -84,7 +85,7 @@ class RobotsPage extends StatelessWidget {
           location: robot.location,
           state: robot.currentState.name,
           updatedAt: robot.stateUpdatedAt,
-          onTap: () {},
+          onTap: () => _toEditRobotDialog(context),
         );
 
         if (index == 0 && !robot.isConfigured) {
@@ -129,6 +130,16 @@ class RobotsPage extends StatelessWidget {
         );
       },
       itemCount: robots.length,
+    );
+  }
+
+  void _toEditRobotDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const RobotDialog();
+      },
+      barrierDismissible: false,
     );
   }
 }
