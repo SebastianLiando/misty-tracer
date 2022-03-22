@@ -10,6 +10,9 @@ class WebsocketRepository {
   late final WebSocketChannel channel;
   late final Future<WebSocketData> connected;
 
+  String? connectedIp;
+  int? connectedPort;
+
   late final Stream<List<Robot>> robots;
 
   Map<String, dynamic> toJson(String input) =>
@@ -32,6 +35,8 @@ class WebsocketRepository {
 
     connected =
         dataStream.firstWhere((data) => data.type == MessageType.connected);
+    connectedIp = ip;
+    connectedPort = port;
 
     final subData =
         dataStream.where((event) => event.type == MessageType.subscriptionData);
@@ -43,6 +48,11 @@ class WebsocketRepository {
 
       return robotsJson.map((json) => Robot.fromJson(json)).toList();
     });
+  }
+
+  /// Subscription data only of the robot with the given [id].
+  Stream<Robot> subDataForId(String id) {
+    return robots.expand((element) => element).where((robot) => robot.id == id);
   }
 
   void disconnect() {

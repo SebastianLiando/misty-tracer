@@ -9,6 +9,12 @@ class RobotsPageCubit extends Cubit<RobotsPageState> {
   final WebsocketRepository wsRepo;
   late final StreamSubscription sub;
 
+  /// The IP address of the server.
+  String get connectedIp => wsRepo.connectedIp!;
+
+  /// The port number of the connection.
+  int get connectedPort => wsRepo.connectedPort!;
+
   RobotsPageCubit(
     this.wsRepo, [
     RobotsPageState initialState = const RobotsPageState(),
@@ -58,5 +64,6 @@ class RobotsPageCubit extends Cubit<RobotsPageState> {
 
   void onChangeShowOnline(bool show) => emit(state.copyWith(showOnline: show));
 
-  void onChangeShowOffline(bool show) => emit(state.copyWith(showOffline: show));
+  void onChangeShowOffline(bool show) =>
+      emit(state.copyWith(showOffline: show));
 }

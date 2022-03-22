@@ -57,4 +57,6 @@ class Robot with _$Robot implements Comparable<Robot> {
 
 extension RobotExt on Robot {
   bool get isConfigured => location.isNotEmpty;
+
+  bool get isOnline => currentState != RobotState.offline;
 }

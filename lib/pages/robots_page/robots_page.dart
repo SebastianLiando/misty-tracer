@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:misty_tracer/common/widgets/divider_with_item.dart';
 import 'package:misty_tracer/network/model/robot/robot.dart';
+import 'package:misty_tracer/pages/robot_dialog/cubit/cubit.dart';
+import 'package:misty_tracer/pages/robot_dialog/cubit/state.dart';
 import 'package:misty_tracer/pages/robot_dialog/robot_dialog.dart';
 import 'package:misty_tracer/pages/robots_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/robots_page/cubit/state.dart';
@@ -85,7 +87,7 @@ class RobotsPage extends StatelessWidget {
           location: robot.location,
           state: robot.currentState.name,
           updatedAt: robot.stateUpdatedAt,
-          onTap: () => _toEditRobotDialog(context),
+          onTap: () => _toEditRobotDialog(context, robot),
         );
 
         if (index == 0 && !robot.isConfigured) {
@@ -133,11 +135,25 @@ class RobotsPage extends StatelessWidget {
     );
   }
 
-  void _toEditRobotDialog(BuildContext context) {
+  void _toEditRobotDialog(BuildContext context, Robot robot) {
+    final cubit = context.read<RobotsPageCubit>();
+    final robotCopy = robot.copyWith();
+
     showDialog(
       context: context,
       builder: (context) {
-        return const RobotDialog();
+        return BlocProvider(
+          create: (context) => RobotDialogCubit(
+            RobotDialogState(
+              ip: cubit.connectedIp,
+              port: cubit.connectedPort,
+              initial: robotCopy,
+              current: robotCopy,
+            ),
+            cubit.wsRepo,
+          ),
+          child: const RobotDialog(),
+        );
       },
       barrierDismissible: false,
     );
