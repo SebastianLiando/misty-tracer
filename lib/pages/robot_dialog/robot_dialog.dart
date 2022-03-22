@@ -56,13 +56,14 @@ class _RobotDialogState extends State<RobotDialog> {
                     online: state.initial.isOnline,
                     width: 70,
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         FieldValue(
                           label: 'SERIAL',
-                          value: Text(state.initial.serial),
+                          value: Expanded(child: Text(state.initial.serial)),
                         ),
                         FieldValue(
                           label: 'STATUS',
