@@ -73,6 +73,7 @@ class WebsocketRepository {
     };
 
     _sendJsonToServer(payload);
+    log('Subscribed to $topic');
   }
 
   void unsubscribe(Topic topic) {
@@ -84,5 +85,6 @@ class WebsocketRepository {
     };
 
     _sendJsonToServer(payload);
+    log('Unsubscribed to $topic');
   }
 }

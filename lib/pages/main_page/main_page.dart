@@ -50,16 +50,14 @@ class _MainPageState extends State<MainPage> {
               ),
             ],
           ),
-          body: AnimatedCrossFade(
-            firstChild: BlocProvider(
-              create: (context) => RobotsPageCubit(widget.wsRepo),
-              child: const RobotsPage(),
-            ),
-            secondChild: const PhotosPage(),
-            crossFadeState: data.tabIndex == 0
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
+          body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
+            child: data.tabIndex == 0
+                ? BlocProvider(
+                    create: (context) => RobotsPageCubit(widget.wsRepo),
+                    child: const RobotsPage(),
+                  )
+                : const PhotosPage(),
           ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: data.tabIndex,
