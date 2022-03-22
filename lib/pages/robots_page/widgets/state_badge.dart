@@ -41,4 +41,27 @@ class StateBadge extends StatelessWidget {
 
   factory StateBadge.reject() =>
       const StateBadge(state: 'REJECT', color: rejectChip);
+
+  factory StateBadge.fromState(String state) {
+    switch (state.toUpperCase()) {
+      case 'OFFLINE':
+        return StateBadge.offline();
+      case 'PENDING':
+        return StateBadge.pending();
+      case 'IDLE':
+        return StateBadge.idle();
+      case 'ENGAGING':
+        return StateBadge.engaging();
+      case 'CAPTURING':
+        return StateBadge.capturing();
+      case 'VERIFYING':
+        return StateBadge.verifying();
+      case 'ACCEPT':
+        return StateBadge.accept();
+      case 'REJECT':
+        return StateBadge.reject();
+      default:
+        throw UnsupportedError("State $state is not supported!");
+    }
+  }
 }

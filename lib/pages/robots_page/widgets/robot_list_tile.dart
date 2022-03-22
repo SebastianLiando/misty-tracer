@@ -27,32 +27,11 @@ class RobotListTile extends StatefulWidget {
 }
 
 class _RobotListTileState extends State<RobotListTile> {
-  Widget get stateChip {
-    switch (widget.state.toUpperCase()) {
-      case 'PENDING':
-        return StateBadge.pending();
-      case 'IDLE':
-        return StateBadge.idle();
-      case 'ENGAGING':
-        return StateBadge.engaging();
-      case 'CAPTURING':
-        return StateBadge.capturing();
-      case 'VERIFYING':
-        return StateBadge.verifying();
-      case 'ACCEPT':
-        return StateBadge.accept();
-      case 'REJECT':
-        return StateBadge.reject();
-      default:
-        return StateBadge.offline();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: RobotIndicator(online: widget.online),
-      trailing: stateChip,
+      trailing: StateBadge.fromState(widget.state),
       title: Text(widget.serial),
       subtitle: Column(
         mainAxisSize: MainAxisSize.min,
