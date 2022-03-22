@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:misty_tracer/common/widgets/text_icon.dart';
 import 'package:misty_tracer/pages/robots_page/widgets/robot_indicator.dart';
 import 'package:misty_tracer/pages/robots_page/widgets/state_badge.dart';
+import 'package:misty_tracer/pages/robots_page/widgets/state_updated_text.dart';
 
 class RobotListTile extends StatefulWidget {
   final bool online;
@@ -49,42 +48,8 @@ class _RobotListTileState extends State<RobotListTile> {
     }
   }
 
-  Timer? _timer;
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // Remove any ongoing timer
-    _timer?.cancel();
-    // Start a new timer
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() {});
-    });
-  }
-
-  String getTimePast(Duration duration) {
-    if (duration < const Duration(minutes: 1)) {
-      return "${duration.inSeconds} seconds";
-    } else if (duration < const Duration(hours: 1)) {
-      return "${duration.inMinutes} minutes";
-    } else if (duration < const Duration(days: 1)) {
-      return "${duration.inHours} hours";
-    } else {
-      return "${duration.inDays} days";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final elapsedTime = DateTime.now().difference(widget.updatedAt);
-
     return ListTile(
       leading: RobotIndicator(online: widget.online),
       trailing: stateChip,
@@ -102,7 +67,7 @@ class _RobotListTileState extends State<RobotListTile> {
               child: Text(widget.location.isEmpty ? '-' : widget.location),
             ),
           ),
-          Text('State updated ${getTimePast(elapsedTime)} ago'),
+          StateUpdatedText(updatedAt: widget.updatedAt),
         ],
       ),
       isThreeLine: true,
