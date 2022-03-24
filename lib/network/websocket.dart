@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:misty_tracer/network/model/data/data.dart';
 import 'package:misty_tracer/network/model/robot/robot.dart';
+import 'package:misty_tracer/network/model/verification/verification.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 enum Topic { robot, verification }
@@ -14,6 +15,7 @@ class WebsocketRepository {
   int? connectedPort;
 
   late final Stream<List<Robot>> robots;
+  late final Stream<List<Verification>> verifications;
 
   Map<String, dynamic> toJson(String input) =>
       const JsonDecoder().convert(input);
@@ -47,6 +49,15 @@ class WebsocketRepository {
       final List<dynamic> robotsJson = event.data['data'];
 
       return robotsJson.map((json) => Robot.fromJson(json)).toList();
+    });
+
+    verifications = subData
+        .where((event) =>
+            event.data['topic'] == Topic.verification.name.toUpperCase())
+        .map((event) {
+      final List<dynamic> jsons = event.data['data'];
+
+      return jsons.map((json) => Verification.fromJson(json)).toList();
     });
   }
 

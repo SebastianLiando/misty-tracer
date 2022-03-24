@@ -6,6 +6,7 @@ import 'package:misty_tracer/network/websocket.dart';
 import 'package:misty_tracer/pages/main_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/main_page/cubit/state.dart';
 import 'package:misty_tracer/pages/main_page/widgets/disconnect_dialog.dart';
+import 'package:misty_tracer/pages/photos_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/photos_page/photos_page.dart';
 import 'package:misty_tracer/pages/robots_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/robots_page/robots_page.dart';
@@ -21,6 +22,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final locationController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainPageCubit, MainPageState>(
@@ -36,9 +39,10 @@ class _MainPageState extends State<MainPage> {
             elevation: 0,
             title: data.tabIndex == 0
                 ? const Text('Misty Robots')
-                : const TextField(
+                : TextField(
+                    controller: locationController,
                     textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Search Location',
                       hintText: 'NTU',
                     ),
@@ -57,7 +61,13 @@ class _MainPageState extends State<MainPage> {
                     create: (context) => RobotsPageCubit(widget.wsRepo),
                     child: const RobotsPage(),
                   )
-                : const PhotosPage(),
+                : BlocProvider(
+                    create: (context) => PhotosPageCubit(
+                      locationController: locationController,
+                      wsRepo: widget.wsRepo,
+                    ),
+                    child: const PhotosPage(),
+                  ),
           ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: data.tabIndex,
@@ -89,8 +99,12 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
+    locationController.dispose();
+
+    // Disconnect from WebSocket
     widget.wsRepo.disconnect();
     log('Disconnected from server');
+
     super.dispose();
   }
 }

@@ -15,3 +15,25 @@ class Iso8601DateConverter implements JsonConverter<DateTime, String> {
     return object.toIso8601String();
   }
 }
+
+class NullableIso8601DateConverter
+    implements JsonConverter<DateTime?, String?> {
+  const NullableIso8601DateConverter();
+
+  @override
+  DateTime? fromJson(String? json) {
+    if (json != null) {
+      return const Iso8601DateConverter().fromJson(json);
+    }
+    return null;
+  }
+
+  @override
+  String? toJson(DateTime? object) {
+    if (object != null) {
+      return const Iso8601DateConverter().toJson(object);
+    }
+
+    return null;
+  }
+}
