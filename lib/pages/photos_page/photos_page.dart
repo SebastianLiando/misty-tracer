@@ -1,10 +1,12 @@
 import 'dart:math';
 
+import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:misty_tracer/common/widgets/text_icon.dart';
 import 'package:misty_tracer/network/model/verification/verification.dart';
+import 'package:misty_tracer/pages/photo_page/photo_page.dart';
 import 'package:misty_tracer/pages/photos_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/photos_page/cubit/state.dart';
 import 'package:misty_tracer/pages/photos_page/widgets/verification_thumbnail.dart';
@@ -74,11 +76,25 @@ class PhotosPage extends StatelessWidget {
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: VerificationThumbnail(
-                  // Example:
-                  // 'http://192.168.0.103:8000/trace-together/images/6218a75b918343cbb16bd4fe/thumbnail.jpg'
-                  url: cubit.getImageThumbnailUri(verification),
-                  accepted: verification.isValid,
+                child: OpenContainer(
+                  closedBuilder: (context, open) {
+                    return InkWell(
+                      onTap: () => open(),
+                      child: VerificationThumbnail(
+                        // Example:
+                        // 'http://192.168.0.103:8000/trace-together/images/6218a75b918343cbb16bd4fe/thumbnail.jpg'
+                        url: cubit.getImageThumbnailUri(verification),
+                        accepted: verification.isValid,
+                      ),
+                    );
+                  },
+                  openBuilder: (context, close) {
+                    return PhotoPage(
+                      ip: cubit.connectedIp,
+                      port: cubit.connectedPort,
+                      verification: verification,
+                    );
+                  },
                 ),
               );
             },

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class TextIcon extends StatelessWidget {
   final Widget text;
   final Widget icon;
+  final double gap;
 
   const TextIcon({
     Key? key,
     required this.icon,
     required this.text,
+    this.gap = 4,
   }) : super(key: key);
 
   @override
@@ -16,7 +18,7 @@ class TextIcon extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         icon,
-        const SizedBox(width: 4),
+        SizedBox(width: gap),
         text,
       ],
     );

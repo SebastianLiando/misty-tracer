@@ -13,7 +13,7 @@ class Verification with _$Verification {
     @JsonKey(name: "date_valid") required bool dateValid,
     @JsonKey(name: "detected_date")
     @NullableIso8601DateConverter()
-         DateTime? detectedDate,
+        DateTime? detectedDate,
     @JsonKey(name: "fully_vaccinated") required bool fullyVaccinated,
     @JsonKey(name: "green_ratio") required double greenRatio,
     @JsonKey(name: "location_actual") required String locationActual,
@@ -35,5 +35,13 @@ extension VerificationExt on Verification {
     final fieldValid = dateValid && locationValid;
 
     return isTTCheckIn && fieldValid;
+  }
+
+  DateTime get actualDate {
+    // Date is taken from MongoDB document id
+    final timestampStr = id.substring(0, 8);
+    final msEpoch = int.parse(timestampStr, radix: 16) * 1000;
+
+    return DateTime.fromMillisecondsSinceEpoch(msEpoch);
   }
 }
