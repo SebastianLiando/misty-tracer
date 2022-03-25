@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:misty_tracer/common/widgets/error_image.dart';
 import 'package:misty_tracer/theme/colors.dart';
 
 class VerificationThumbnail extends StatelessWidget {
@@ -30,7 +29,7 @@ class VerificationThumbnail extends StatelessWidget {
         children: [
           CachedNetworkImage(
             imageUrl: Uri.parse(url).toString(),
-            errorWidget: _errorPlaceholder,
+            errorWidget: (context, url, error) => const ErrorImage(),
             placeholder: (context, url) => const Center(
               child: CircularProgressIndicator(),
             ),
@@ -38,27 +37,6 @@ class VerificationThumbnail extends StatelessWidget {
           Positioned(child: resultIcon, bottom: 8, right: 8),
         ],
       ),
-    );
-  }
-
-  Widget _errorPlaceholder(
-    BuildContext context,
-    String url,
-    dynamic error,
-  ) {
-    log(error.toString());
-
-    return Stack(
-      children: [
-        Container(color: Colors.grey),
-        const Positioned.fill(
-          child: Icon(
-            Icons.image_not_supported,
-            color: Colors.white,
-            size: 60,
-          ),
-        ),
-      ],
     );
   }
 }

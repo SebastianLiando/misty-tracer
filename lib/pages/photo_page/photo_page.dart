@@ -1,13 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:misty_tracer/common/widgets/background_blur.dart';
+import 'package:misty_tracer/common/widgets/carousel_indicator.dart';
 import 'package:misty_tracer/network/model/verification/verification.dart';
 import 'package:misty_tracer/pages/photo_page/widgets/verification_details.dart';
+import 'package:misty_tracer/pages/photo_page/widgets/verification_photo_details.dart';
+import 'package:misty_tracer/pages/photo_page/widgets/verification_photos.dart';
 
-class PhotoPage extends StatelessWidget {
+class PhotoPage extends StatefulWidget {
   final String ip;
   final int port;
-
   final Verification verification;
 
   const PhotoPage({
@@ -18,63 +20,90 @@ class PhotoPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<PhotoPage> createState() => _PhotoPageState();
+}
+
+class _PhotoPageState extends State<PhotoPage> {
+  final _carouselController = CarouselController();
+
+  Color get _appBarColor =>
+      Theme.of(context).colorScheme.primary.withOpacity(0.5);
+
+  @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return CarouselSlider(
-                      options: CarouselOptions(
-                        height: constraints.maxHeight,
-                        viewportFraction: 1
+    return Scaffold(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      VerificationPhotos(
+                        ip: widget.ip,
+                        port: widget.port,
+                        verificationId: widget.verification.id,
+                        controller: _carouselController,
                       ),
-                      items: [
-                        CachedNetworkImage(
-                          imageUrl:
-                          'http://$ip:$port/trace-together/images/${verification.id}/thumbnail.jpg',
-                          width: constraints.maxWidth,
-                          fit: BoxFit.cover,
+                      Positioned(
+                        child: BackgroundBlur(
+                          child: BottomAppBar(
+                            elevation: 0,
+                            color: _appBarColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: VerificationPhotoDetails(
+                                title: 'Original',
+                                desc: 'The actual photo taken by Misty',
+                                isValid: widget.verification.isValid,
+                                fullyVaccinated:
+                                    widget.verification.fullyVaccinated,
+                              ),
+                            ),
+                          ),
                         ),
-                        CachedNetworkImage(
-                          imageUrl:
-                          'http://$ip:$port/trace-together/images/${verification.id}/thumbnail.jpg',
-                          width: constraints.maxWidth,
-                          fit: BoxFit.cover,
-                        ),
-                      ],
-                    );
-                  },
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                      ),
+                    ],
+                  ),
+                  flex: 7,
                 ),
-                flex: 7,
-              ),
-              Expanded(
-                child: VerificationDetails(
-                  location: verification.locationActual,
-                  detectedLocation: verification.locationDetected,
-                  serial: verification.serial,
-                  date: verification.actualDate,
-                  detectedDate: verification.detectedDate,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: CarouselIndicator(
+                    count: 4,
+                    onTap: (index) {
+                      _carouselController.animateToPage(index);
+                    },
+                  ),
                 ),
-                flex: 3,
-              ),
-            ],
+                Expanded(
+                  child: VerificationDetails(
+                    location: widget.verification.locationActual,
+                    detectedLocation: widget.verification.locationDetected,
+                    serial: widget.verification.serial,
+                    date: widget.verification.actualDate,
+                    detectedDate: widget.verification.detectedDate,
+                  ),
+                  flex: 3,
+                ),
+              ],
+            ),
           ),
-        ),
-        _buildAppBar(context),
-      ],
+          _buildAppBar(context),
+        ],
+      ),
     );
   }
 
   Widget _buildAppBar(BuildContext context) {
     return Positioned(
-      child: AppBar(
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+      child: BackgroundBlur(
+        child: AppBar(elevation: 0, backgroundColor: _appBarColor),
       ),
       top: 0,
       left: 0,
