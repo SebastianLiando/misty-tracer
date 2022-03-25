@@ -11,6 +11,8 @@ class VerificationPhotos extends StatelessWidget {
   final CarouselController? controller;
   final void Function(int) onPageChanged;
 
+  final void Function(String)? onTapImage;
+
   const VerificationPhotos({
     Key? key,
     required this.ip,
@@ -18,6 +20,7 @@ class VerificationPhotos extends StatelessWidget {
     required this.verificationId,
     required this.onPageChanged,
     this.controller,
+    this.onTapImage,
   }) : super(key: key);
 
   String get _baseImageUrl =>
@@ -43,13 +46,16 @@ class VerificationPhotos extends StatelessWidget {
           ),
           items: _imageUrls.map(
             (url) {
-              return CachedNetworkImage(
-                imageUrl: url,
-                width: constraints.maxWidth,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) {
-                  return const ErrorImage();
-                },
+              return InkWell(
+                onTap: () => onTapImage?.call(url),
+                child: CachedNetworkImage(
+                  imageUrl: url,
+                  width: constraints.maxWidth,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) {
+                    return const ErrorImage();
+                  },
+                ),
               );
             },
           ).toList(),

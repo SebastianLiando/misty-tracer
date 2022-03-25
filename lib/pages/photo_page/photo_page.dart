@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:misty_tracer/common/widgets/background_blur.dart';
 import 'package:misty_tracer/common/widgets/carousel_indicator.dart';
 import 'package:misty_tracer/network/model/verification/verification.dart';
+import 'package:misty_tracer/pages/fullscreen_photo_page/fullscreen_photo_page.dart';
 import 'package:misty_tracer/pages/photo_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/photo_page/cubit/state.dart';
 import 'package:misty_tracer/pages/photo_page/widgets/verification_details.dart';
@@ -55,6 +56,14 @@ class _PhotoPageState extends State<PhotoPage> {
                             controller: _carouselController,
                             onPageChanged: (index) =>
                                 cubit.onImageChange(index),
+                            onTapImage: (url) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return FullScreenPhotoPage(url: url);
+                                },
+                              );
+                            },
                           ),
                           Positioned(
                             child: BackgroundBlur(
