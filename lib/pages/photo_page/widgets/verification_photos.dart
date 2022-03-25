@@ -9,12 +9,14 @@ class VerificationPhotos extends StatelessWidget {
   final String verificationId;
 
   final CarouselController? controller;
+  final void Function(int) onPageChanged;
 
   const VerificationPhotos({
     Key? key,
     required this.ip,
     required this.port,
     required this.verificationId,
+    required this.onPageChanged,
     this.controller,
   }) : super(key: key);
 
@@ -37,6 +39,7 @@ class VerificationPhotos extends StatelessWidget {
           options: CarouselOptions(
             height: constraints.maxHeight,
             viewportFraction: 1,
+            onPageChanged: (index, _) => onPageChanged(index),
           ),
           items: _imageUrls.map(
             (url) {

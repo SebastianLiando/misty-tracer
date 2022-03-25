@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:misty_tracer/common/widgets/text_icon.dart';
 import 'package:misty_tracer/network/model/verification/verification.dart';
+import 'package:misty_tracer/pages/photo_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/photo_page/photo_page.dart';
 import 'package:misty_tracer/pages/photos_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/photos_page/cubit/state.dart';
@@ -89,10 +90,13 @@ class PhotosPage extends StatelessWidget {
                     );
                   },
                   openBuilder: (context, close) {
-                    return PhotoPage(
-                      ip: cubit.connectedIp,
-                      port: cubit.connectedPort,
-                      verification: verification,
+                    return BlocProvider(
+                      create: (context) => PhotoPageCubit(),
+                      child: PhotoPage(
+                        ip: cubit.connectedIp,
+                        port: cubit.connectedPort,
+                        verification: verification,
+                      ),
                     );
                   },
                 ),
