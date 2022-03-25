@@ -78,6 +78,7 @@ class PhotosPage extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: OpenContainer(
+                  transitionDuration: const Duration(milliseconds: 200),
                   closedBuilder: (context, open) {
                     return InkWell(
                       onTap: () => open(),

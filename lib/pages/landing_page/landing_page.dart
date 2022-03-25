@@ -47,16 +47,22 @@ class _LandingPageState extends State<LandingPage> {
 
   static const startServerStep = Step(
     title: Text('Start the Server'),
-    content: Text(
-      'Please make sure that the server is running before continuing.',
+    content: Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        'Please make sure that the server is running before continuing.',
+      ),
     ),
   );
 
   static const onMistyStep = Step(
     title: Text('(Optional) Power on Misty robots'),
-    content: Text(
-      'This app shows the state of each robot in realtime, but you may choose to do this later.'
-      '\n\nYou can still view photos of TraceTogether verifications regardless.',
+    content: Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        'This app shows the state of each robot in realtime, but you may choose to do this later.'
+        '\n\nYou can still view photos of TraceTogether verifications regardless.',
+      ),
     ),
   );
 

@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zetzaus.misty_tracer">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="Misty Tracer"
         android:name="${applicationName}"
