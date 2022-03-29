@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const lightIndigo = Color(0xFF353982);
-final darkIndigo = Colors.indigo.shade800;
+const darkIndigo = Color(0xFF7A81F8);
 const lightError = Color(0xFFFF7660);
 final darkError = Colors.red.shade300;
 

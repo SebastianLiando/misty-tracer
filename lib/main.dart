@@ -16,7 +16,7 @@ class MistyTracer extends StatelessWidget {
     return MaterialApp(
       title: 'Misty Tracer',
       theme: buildTheme(false),
-      darkTheme: buildTheme(true),
+      darkTheme: buildTheme(false),
       home: BlocProvider(
         create: (ctx) => LandingPageCubit(),
         child: const LandingPage(),

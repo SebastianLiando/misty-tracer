@@ -18,7 +18,8 @@ class PhotosPageState with _$PhotosPageState {
   Map<String, List<Verification>> get filteredVerification {
     final current = Map.of(verifications);
 
-    current.removeWhere((location, _) => !location.contains(locationFilter));
+    current.removeWhere((location, _) =>
+        !location.toLowerCase().contains(locationFilter.toLowerCase()));
 
     return current;
   }

@@ -14,31 +14,6 @@ class RobotsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final robots = [
-    //   Robot(
-    //       id: '',
-    //       serial: '2022513230',
-    //       currentState: RobotState.offline,
-    //       stateUpdatedAt: DateTime(2022, 3, 9, 14, 15)),
-    //   Robot(
-    //       id: '',
-    //       serial: '2022513231',
-    //       currentState: RobotState.pending,
-    //       stateUpdatedAt: DateTime(2022, 3, 9, 14, 15)),
-    //   Robot(
-    //       id: '',
-    //       serial: '2022513232',
-    //       location: "Hello",
-    //       currentState: RobotState.idle,
-    //       stateUpdatedAt: DateTime(2022, 3, 9, 14, 15)),
-    //   Robot(
-    //       id: '',
-    //       serial: '2022513233',
-    //       location: "Bye",
-    //       currentState: RobotState.offline,
-    //       stateUpdatedAt: DateTime(2022, 3, 9, 14, 14)),
-    // ];
-
     return BlocBuilder<RobotsPageCubit, RobotsPageState>(
       builder: (context, data) {
         final cubit = context.read<RobotsPageCubit>();
