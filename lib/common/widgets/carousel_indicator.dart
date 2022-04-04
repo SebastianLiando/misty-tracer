@@ -5,11 +5,16 @@ class CarouselIndicator extends StatelessWidget {
   final int selected;
   final void Function(int index) onTap;
 
+  final Color? selectedColor;
+  final Color? disabledColor;
+
   const CarouselIndicator({
     Key? key,
     required this.count,
     this.selected = 0,
     required this.onTap,
+    this.selectedColor,
+    this.disabledColor,
   })  : assert(
           selected <= count,
           "The selected index must be less than or equal to count!",
@@ -32,8 +37,8 @@ class CarouselIndicator extends StatelessWidget {
               child: CircleAvatar(
                 radius: 6,
                 backgroundColor: isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).disabledColor,
+                    ? selectedColor ?? Theme.of(context).colorScheme.primary
+                    : disabledColor ?? Theme.of(context).disabledColor,
               ),
             ),
           );

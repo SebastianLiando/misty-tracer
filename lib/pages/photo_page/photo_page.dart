@@ -33,6 +33,11 @@ class _PhotoPageState extends State<PhotoPage> {
   Color get _appBarColor =>
       Theme.of(context).colorScheme.primary.withOpacity(0.25);
 
+  bool get isLandscape {
+    final size = MediaQuery.of(context).size;
+    return size.width >= size.height;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PhotoPageCubit, PhotoPageState>(
@@ -43,82 +48,109 @@ class _PhotoPageState extends State<PhotoPage> {
           body: Stack(
             children: [
               SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Stack(
+                child: isLandscape
+                    ? Row(
                         children: [
-                          VerificationPhotos(
-                            ip: widget.ip,
-                            port: widget.port,
-                            verificationId: widget.verification.id,
-                            controller: _carouselController,
-                            onPageChanged: (index) =>
-                                cubit.onImageChange(index),
-                            onTapImage: (url) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return FullScreenPhotoPage(url: url);
-                                },
-                              );
-                            },
+                          Expanded(
+                            child: _buildPhotoSection(cubit, context, state),
+                            flex: 7,
                           ),
-                          Positioned(
-                            child: BackgroundBlur(
-                              child: BottomAppBar(
-                                elevation: 0,
-                                color: _appBarColor,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: VerificationPhotoDetails(
-                                    title: state.selectedImageTitle,
-                                    desc: state.selectedImageDesc,
-                                    isValid: widget.verification.isValid,
-                                    fullyVaccinated:
-                                        widget.verification.fullyVaccinated,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
+                          Expanded(
+                            child: _buildDetailsSection(),
+                            flex: 3,
+                          ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _buildPhotoSection(cubit, context, state),
+                            flex: 7,
+                          ),
+                          Expanded(
+                            child: _buildDetailsSection(),
+                            flex: 3,
                           ),
                         ],
                       ),
-                      flex: 7,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: CarouselIndicator(
-                        count: 4,
-                        selected: state.selectedImageIndex,
-                        onTap: (index) {
-                          _carouselController.animateToPage(index);
-                          cubit.onImageChange(index);
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: VerificationDetails(
-                        location: widget.verification.locationActual,
-                        detectedLocation: widget.verification.locationDetected,
-                        serial: widget.verification.serial,
-                        date: widget.verification.actualDate,
-                        detectedDate: widget.verification.detectedDate,
-                      ),
-                      flex: 3,
-                    ),
-                  ],
-                ),
               ),
-              _buildAppBar(context),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildDetailsSection() {
+    return VerificationDetails(
+      location: widget.verification.locationActual,
+      detectedLocation: widget.verification.locationDetected,
+      serial: widget.verification.serial,
+      date: widget.verification.actualDate,
+      detectedDate: widget.verification.detectedDate,
+    );
+  }
+
+  Widget _buildPhotoSection(
+    PhotoPageCubit cubit,
+    BuildContext context,
+    PhotoPageState state,
+  ) {
+    return Stack(
+      children: [
+        VerificationPhotos(
+          ip: widget.ip,
+          port: widget.port,
+          verificationId: widget.verification.id,
+          controller: _carouselController,
+          onPageChanged: (index) => cubit.onImageChange(index),
+          onTapImage: (url) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return FullScreenPhotoPage(url: url);
+              },
+            );
+          },
+        ),
+        Positioned(
+          child: BackgroundBlur(
+            child: BottomAppBar(
+              elevation: 0,
+              color: _appBarColor,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: VerificationPhotoDetails(
+                  title: state.selectedImageTitle,
+                  desc: state.selectedImageDesc,
+                  isValid: widget.verification.isValid,
+                  fullyVaccinated: widget.verification.fullyVaccinated,
+                ),
+              ),
+            ),
+          ),
+          bottom: 0,
+          left: 0,
+          right: 0,
+        ),
+        _buildAppBar(context),
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 16,
+          child: CarouselIndicator(
+            count: 4,
+            selected: state.selectedImageIndex,
+            onTap: (index) {
+              _carouselController.animateToPage(index);
+              cubit.onImageChange(index);
+            },
+            selectedColor: Colors.white,
+            disabledColor: Colors.grey.shade600,
+          ),
+        )
+      ],
     );
   }
 
