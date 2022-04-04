@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -23,6 +24,26 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final locationController = TextEditingController();
+  StreamSubscription? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _sub = widget.wsRepo.dataStream.listen(
+      (event) {},
+      onDone: () {
+        log("Disconnected from server! Returning");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sorry, you have been disconnected :('),
+          ),
+        );
+        Navigator.pop(context);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +120,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
+    _sub?.cancel();
     locationController.dispose();
 
     // Disconnect from WebSocket

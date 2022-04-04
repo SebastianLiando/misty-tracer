@@ -14,6 +14,7 @@ class WebsocketRepository {
   String? connectedIp;
   int? connectedPort;
 
+  late final Stream<WebSocketData> dataStream;
   late final Stream<List<Robot>> robots;
   late final Stream<List<Verification>> verifications;
 
@@ -30,7 +31,7 @@ class WebsocketRepository {
     log('Connecting to $uri');
     channel = WebSocketChannel.connect(uri);
 
-    final dataStream = channel.stream.map((event) {
+    dataStream = channel.stream.map((event) {
       Map<String, dynamic> json = toJson(event);
       return WebSocketData.fromJson(json);
     }).asBroadcastStream();
