@@ -57,4 +57,7 @@ class LandingPageCubit extends Cubit<LandingPageState> {
     await _prefRepo.setSkipTutorial(skip);
     _loadPreferenceData();
   }
+
+  void onConnecting(bool connecting) =>
+      emit(state.copyWith(isConnecting: connecting));
 }

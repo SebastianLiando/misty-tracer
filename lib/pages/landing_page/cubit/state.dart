@@ -11,6 +11,7 @@ class LandingPageState with _$LandingPageState {
     @Default(null) int? previousPort,
     @Default(false) bool skipTutorial,
     @Default(0) int stepperIndex,
+    @Default(false) bool isConnecting,
   }) = _LandingPageState;
 }
 

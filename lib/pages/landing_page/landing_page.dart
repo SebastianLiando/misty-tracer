@@ -76,6 +76,7 @@ class _LandingPageState extends State<LandingPage> {
           const SizedBox(height: 12),
           TextField(
             controller: ipController,
+            readOnly: state.isConnecting,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               prefixIcon: const Icon(CustomIcon.worldwide),
@@ -89,6 +90,7 @@ class _LandingPageState extends State<LandingPage> {
           const SizedBox(height: 8),
           TextField(
             controller: portController,
+            readOnly: state.isConnecting,
             inputFormatters: [
               FilteringTextInputFormatter.allow(
                 RegExp(r'^\d{0,5}$'),
@@ -133,7 +135,8 @@ class _LandingPageState extends State<LandingPage> {
                   onStepContinue: () => pageCubit.onStepperNext(),
                   onStepCancel: () => pageCubit.onStepperPrevious(),
                 ),
-                _buildFooter(state),
+                // Remove footer when connecting to the server
+                if (!state.isConnecting) _buildFooter(state),
               ],
             ),
           ),
@@ -174,20 +177,22 @@ class _LandingPageState extends State<LandingPage> {
           ),
         );
       case 2:
-        return Row(
-          children: [
-            ElevatedButton(
-              onPressed: state.canConnectToServer
-                  ? () => connectToServer(state.ip, state.portNumber)
-                  : null,
-              child: const Text('CONNECT'),
-            ),
-            TextButton(
-              onPressed: () => details.onStepCancel?.call(),
-              child: const Text('PREVIOUS'),
-            ),
-          ],
-        );
+        return state.isConnecting
+            ? const LinearProgressIndicator()
+            : Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: state.canConnectToServer
+                        ? () => connectToServer(state.ip, state.portNumber)
+                        : null,
+                    child: const Text('CONNECT'),
+                  ),
+                  TextButton(
+                    onPressed: () => details.onStepCancel?.call(),
+                    child: const Text('PREVIOUS'),
+                  ),
+                ],
+              );
       default:
         return const SizedBox();
     }
@@ -228,6 +233,7 @@ class _LandingPageState extends State<LandingPage> {
 
     // Connect
     wsRepo.connect(ip, port);
+    pageCubit.onConnecting(true);
 
     try {
       await wsRepo.connected;
@@ -253,6 +259,8 @@ class _LandingPageState extends State<LandingPage> {
           content: Text('Failed to connect to server: ${err.message}'),
         ),
       );
+    } finally {
+      pageCubit.onConnecting(false);
     }
   }
 }
