@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:misty_tracer/common/utils/list_ext.dart';
 import 'package:misty_tracer/network/model/robot/robot.dart';
 import 'package:misty_tracer/network/websocket.dart';
 import 'package:misty_tracer/pages/robots_page/cubit/state.dart';
@@ -20,7 +21,7 @@ class RobotsPageCubit extends Cubit<RobotsPageState> {
     RobotsPageState initialState = const RobotsPageState(),
   ]) : super(initialState) {
     // Subscribes to robots
-    wsRepo.subscribe(Topic.robot);
+    wsRepo.subscribe(topicRobot);
 
     // Listen to data changes
     sub = wsRepo.robots.listen((robots) {
@@ -30,26 +31,8 @@ class RobotsPageCubit extends Cubit<RobotsPageState> {
 
   void updateRobots(List<Robot> newRobots) {
     final currentRobots = state.robots;
-    final idsToIndex = <String, int>{};
-
-    for (int i = 0; i < currentRobots.length; i++) {
-      final id = currentRobots[i].id;
-      idsToIndex[id] = i;
-    }
-
-    final updatedRobots = List.of(currentRobots);
-    for (final robot in newRobots) {
-      final index = idsToIndex[robot.id];
-
-      if (index != null) {
-        // Update on existing robot data
-        updatedRobots[index] = robot;
-      } else {
-        // New robot data
-        updatedRobots.add(robot);
-      }
-    }
-
+    final updatedRobots =
+        currentRobots.updateOnSameId(newRobots, (robot) => robot.id);
     updatedRobots.sort();
     emit(state.copyWith(robots: updatedRobots));
   }
@@ -58,7 +41,7 @@ class RobotsPageCubit extends Cubit<RobotsPageState> {
   Future<void> close() {
     // Unsubscribe from robots
     sub.cancel();
-    wsRepo.unsubscribe(Topic.robot);
+    wsRepo.unsubscribe(topicRobot);
     return super.close();
   }
 

@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:misty_tracer/network/websocket.dart';
+import 'package:misty_tracer/pages/attendance_page/attendance_page.dart';
+import 'package:misty_tracer/pages/attendance_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/main_page/cubit/cubit.dart';
 import 'package:misty_tracer/pages/main_page/cubit/state.dart';
 import 'package:misty_tracer/pages/main_page/widgets/disconnect_dialog.dart';
@@ -58,16 +60,7 @@ class _MainPageState extends State<MainPage> {
             backgroundColor: Theme.of(ctx).scaffoldBackgroundColor,
             foregroundColor: Theme.of(ctx).colorScheme.primary,
             elevation: 0,
-            title: data.tabIndex == 0
-                ? const Text('Misty Robots')
-                : TextField(
-                    controller: locationController,
-                    textInputAction: TextInputAction.done,
-                    decoration: const InputDecoration(
-                      labelText: 'Search Location',
-                      hintText: 'NTU',
-                    ),
-                  ),
+            title: _buildAppBarTitle(data.tabIndex),
             actions: [
               TextButton(
                 onPressed: () => disconnect(),
@@ -77,18 +70,7 @@ class _MainPageState extends State<MainPage> {
           ),
           body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            child: data.tabIndex == 0
-                ? BlocProvider(
-                    create: (context) => RobotsPageCubit(widget.wsRepo),
-                    child: const RobotsPage(),
-                  )
-                : BlocProvider(
-                    create: (context) => PhotosPageCubit(
-                      locationController: locationController,
-                      wsRepo: widget.wsRepo,
-                    ),
-                    child: const PhotosPage(),
-                  ),
+            child: _buildContent(data.tabIndex),
           ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: data.tabIndex,
@@ -101,12 +83,61 @@ class _MainPageState extends State<MainPage> {
                 icon: Icon(Icons.photo),
                 label: 'Photos',
               ),
+              NavigationDestination(
+                icon: Icon(Icons.email),
+                label: 'Attendance',
+              )
             ],
             onDestinationSelected: ctx.read<MainPageCubit>().onTabChange,
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildAppBarTitle(int tabIndex) {
+    switch (tabIndex) {
+      case 0:
+        return const Text('Misty Robots');
+      case 1:
+        return TextField(
+          controller: locationController,
+          textInputAction: TextInputAction.done,
+          decoration: const InputDecoration(
+            labelText: 'Search Location',
+            hintText: 'NTU',
+          ),
+        );
+      case 2:
+        return const Text('Attendance');
+      default:
+        throw ArgumentError("Tab index $tabIndex not supported!");
+    }
+  }
+
+  Widget _buildContent(int tabIndex) {
+    switch (tabIndex) {
+      case 0:
+        return BlocProvider(
+          create: (context) => RobotsPageCubit(widget.wsRepo),
+          child: const RobotsPage(),
+        );
+      case 1:
+        return BlocProvider(
+          create: (context) => PhotosPageCubit(
+            locationController: locationController,
+            wsRepo: widget.wsRepo,
+          ),
+          child: const PhotosPage(),
+        );
+      case 2:
+        return BlocProvider(
+          create: (context) => AttendancePageCubit(widget.wsRepo),
+          child: const AttendancePage(),
+        );
+      default:
+        throw ArgumentError("Tab index $tabIndex not supported!");
+    }
   }
 
   void disconnect() {

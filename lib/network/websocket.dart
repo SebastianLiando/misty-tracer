@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
+
+import 'package:misty_tracer/network/model/confirm_email/confirmation_email.dart';
 import 'package:misty_tracer/network/model/data/data.dart';
 import 'package:misty_tracer/network/model/robot/robot.dart';
 import 'package:misty_tracer/network/model/verification/verification.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-enum Topic { robot, verification }
+const topicRobot = 'ROBOT';
+const topicVerification = 'VERIFICATION';
+const topicConfirmationEmail = 'CONFIRMATION_EMAIL';
 
 class WebsocketRepository {
   late final WebSocketChannel channel;
@@ -17,6 +21,7 @@ class WebsocketRepository {
   late final Stream<WebSocketData> dataStream;
   late final Stream<List<Robot>> robots;
   late final Stream<List<Verification>> verifications;
+  late final Stream<List<ConfirmationEmail>> emails;
 
   Map<String, dynamic> toJson(String input) =>
       const JsonDecoder().convert(input);
@@ -44,21 +49,31 @@ class WebsocketRepository {
     final subData =
         dataStream.where((event) => event.type == MessageType.subscriptionData);
 
+    // Robot data stream
     robots = subData
-        .where((event) => event.data['topic'] == Topic.robot.name.toUpperCase())
+        .where((event) => event.data['topic'] == topicRobot)
         .map((event) {
       final List<dynamic> robotsJson = event.data['data'];
 
       return robotsJson.map((json) => Robot.fromJson(json)).toList();
     });
 
+    // TraceTogether verification data stream
     verifications = subData
-        .where((event) =>
-            event.data['topic'] == Topic.verification.name.toUpperCase())
+        .where((event) => event.data['topic'] == topicVerification)
         .map((event) {
       final List<dynamic> jsons = event.data['data'];
 
       return jsons.map((json) => Verification.fromJson(json)).toList();
+    });
+
+    // Confirmation email data stream
+    emails = subData
+        .where((event) => event.data['topic'] == topicConfirmationEmail)
+        .map((event) {
+      final List<dynamic> jsons = event.data['data'];
+
+      return jsons.map((json) => ConfirmationEmail.fromJson(json)).toList();
     });
   }
 
@@ -76,11 +91,11 @@ class WebsocketRepository {
     channel.sink.add(encoded);
   }
 
-  void subscribe(Topic topic) {
+  void subscribe(String topic) {
     final payload = {
       'type': 'SUBSCRIBE',
       'data': {
-        'topic': topic.name.toUpperCase(),
+        'topic': topic,
       },
     };
 
@@ -88,11 +103,11 @@ class WebsocketRepository {
     log('Subscribed to $topic');
   }
 
-  void unsubscribe(Topic topic) {
+  void unsubscribe(String topic) {
     final payload = {
       'type': 'UNSUBSCRIBE',
       'data': {
-        'topic': topic.name.toUpperCase(),
+        'topic': topic,
       },
     };
 

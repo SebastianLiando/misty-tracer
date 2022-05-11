@@ -31,7 +31,7 @@ class PhotosPageCubit extends Cubit<PhotosPageState> {
     locationController.addListener(_listener);
 
     // Listen to verification data
-    wsRepo.subscribe(Topic.verification);
+    wsRepo.subscribe(topicVerification);
     _sub = wsRepo.verifications.listen((verifications) {
       final grouped = verifications.groupListsBy((v) => v.locationActual);
 
@@ -55,7 +55,7 @@ class PhotosPageCubit extends Cubit<PhotosPageState> {
   Future<void> close() {
     locationController.removeListener(_listener);
     _sub.cancel();
-    wsRepo.unsubscribe(Topic.verification);
+    wsRepo.unsubscribe(topicVerification);
 
     return super.close();
   }
