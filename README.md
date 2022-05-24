@@ -4,11 +4,9 @@
 
 Dashboard app for TraceTogether check-in certificate verification using Misty robots.
 
-<p float="left">
-    <img src="./docs/connect.gif" width="32%"/>
-    <img src="./docs/robot.gif" width="32%"/>
-    <img src="./docs/photos.gif" width="32%"/>
-</p>
+| Landing Page | Robots Tab | Photos Tab |
+| --- | --- | --- |
+| ![](/docs/connect.gif) | ![](/docs/robot.gif) | ![](/docs/photos.gif) |
 
 This app is the GUI component for my final year project for my Bachelors in Computer Science in Nanyang Technological University. There are 2 other components: [the server](https://github.com/SebastianLiando/misty-skills/tree/main/trace-together-checker/server) and [the robot](https://github.com/SebastianLiando/misty-skills/tree/main/trace-together-checker/skill). Please find the detailed report [here](https://hdl.handle.net/10356/157337).
 
